@@ -17,18 +17,18 @@ namespace SimplyFigureView
         protected int CoordX;
         protected int CoordY;
         protected ConsoleColor Color;
-        protected int Size;
 
 
-        public Figure(int x, int y, ConsoleColor color, int size)
+
+        public Figure(int x, int y, ConsoleColor color)
         {
             CoordX = x;
             CoordY = y;
             Color = color;
-            Size = size;
+
         }
 
-        protected void Print()
+        public void Print()
         {
             Console.SetCursorPosition(CoordX, CoordY);
             Console.ForegroundColor = Color;
@@ -38,26 +38,60 @@ namespace SimplyFigureView
 
     class Square : Figure
     {
-
-        public Square(int x, int y, ConsoleColor color, int size) : base(x, y, color, size)
-        { }
+        private int a;
+        public Square(int x, int y, ConsoleColor color, int a) : base(x, y, color)
+        {
+            this.a = a;
+        }
 
         public new void Print()
         {
-
             Console.ForegroundColor = Color;
-            for (int i = 0; i < Size; i++)
+            for (int i = 0; i < a; i++)
             {
                 Console.SetCursorPosition(CoordX, CoordY + i);
-                Console.WriteLine(new string('*', Size));
+                Console.WriteLine(new string('*', a));
             }
+        }
+    }
 
+    class Rectangle : Figure
+    {
+        private int a, b;
+        public Rectangle(int x, int y, ConsoleColor color, int a, int b) : base(x, y, color)
+        {
+            this.a = a;
+            this.b = b;
         }
 
+        public new void Print()
+        {
+            Console.ForegroundColor = Color;
+            for (int i = 0; i < b; i++)
+            {
+                Console.SetCursorPosition(CoordX, CoordY + i);
+                Console.WriteLine(new string('*', a));
+            }
+        }
+    }
 
+    class Triangle : Figure
+    {
+        private int a;
+        public Triangle(int x, int y, ConsoleColor color, int a) : base(x, y, color)
+        {
+            this.a = a;
+        }
 
-
-
+        public new void Print()
+        {
+            Console.ForegroundColor = Color;
+            for (int i = 0; i < a; i++)
+            {
+                Console.SetCursorPosition(CoordX, CoordY + i);
+                Console.WriteLine(new string('*', 1 + i));
+            }
+        }
     }
 
 
@@ -67,7 +101,7 @@ namespace SimplyFigureView
         private Menu Menu1;// меню
         private HorizontalMenu MenuSize;
         private VerticalMenu MenuColor;
-
+        private List<Figure> Figures;
         private bool ExitFlag = true; // флаг выхода из програмы
 
         public FigureView()
@@ -75,23 +109,39 @@ namespace SimplyFigureView
             Menu1 = new Menu(1, 1, new IMenu
 
             {
-                new ItemMenu(" Треугольник", new GetMethod(Print)),
-                new ItemMenu(" Квадрат", new GetMethod(Print)),
-                new ItemMenu(" Прямоугольник", new GetMethod(Print)),
-                new ItemMenu(" Ромб", new GetMethod(Print)),
-                new ItemMenu(" Трапеция", new GetMethod(Print)),
-                new ItemMenu(" Многоугольник", new GetMethod(Print)),
+                new ItemMenu(" Треугольник", new GetMethod(PrintTriangle)),
+                new ItemMenu(" Квадрат", new GetMethod(PrintSquare)),
+                new ItemMenu(" Прямоугольник", new GetMethod(PrintRectangle)),
+                new ItemMenu(" Ромб", new GetMethod(PrintRomb)),
+                new ItemMenu(" Трапеция", new GetMethod(PrintTrapeze)),
+                new ItemMenu(" Многоугольник", new GetMethod(PrintNAngle)),
                 new ItemMenu(" Помощь", new GetMethod(Help)),
                 new ItemMenu(" Выход", new GetMethod(Exit))
             });
 
             MenuSize = new HorizontalMenu(10, 12, new List<string> { "2", "3", "4", "5", "6" });
-            MenuColor = new VerticalMenu(10, 13, new List<string> { "Синий", "Зеленый", "Бирюзовый", "Красный", "Розовый", "Желтый", "Белый" });
+            MenuColor = new VerticalMenu(10, 14, new List<string> { "Синий", "Зеленый", "Бирюзовый", "Красный", "Розовый", "Желтый", "Белый" });
         }
+
+       
+
+
+        private void Print()
+        {
+            foreach (var figure in Figures)
+            {
+                figure.Print();
+
+            }
+
+        }
+        
+
 
         //помощь
         private void Help()
         {
+            Console.SetCursorPosition(0, 15);
             string text = "Мы все сможем!";
             Console.WriteLine(text);
             Console.ReadKey();
@@ -106,9 +156,43 @@ namespace SimplyFigureView
             }
 
         }
-        private void Print()
+        
+
+        private void PrintSquare()
         {
-            int x, y, size;
+            SetFigure(1);
+        }
+
+        private void PrintRectangle()
+        {
+            SetFigure(2);
+        }
+
+        private void PrintTriangle()
+        {
+            SetFigure(3);
+        }
+
+        private void PrintRomb()
+        {
+            SetFigure(4);
+        }
+        private void PrintTrapeze()
+        {
+            SetFigure(5);
+        }
+        private void PrintNAngle()
+        {
+            SetFigure(6);
+        }
+
+
+
+
+        private void SetFigure(int type)
+        {
+            int x, y, a;
+            int b = 2;
             Console.SetCursorPosition(0, 10);
             do
             {
@@ -122,20 +206,78 @@ namespace SimplyFigureView
             } while (!Int32.TryParse(Console.ReadLine(), out y));
 
             Console.SetCursorPosition(0, 12);
-            Console.Write("Размер: ");
-            size = Int32.Parse(MenuSize.Show());
-            Console.SetCursorPosition(0, 13);
+            Console.Write("Размер 1: ");
+            a = Int32.Parse(MenuSize.Show());
+            if (type == 2)
+            {
+                Console.SetCursorPosition(0, 13);
+                Console.Write("Размер 2: ");
+                MenuSize.SetY(13);
+                b = Int32.Parse(MenuSize.Show());
+            }
+
+            Console.SetCursorPosition(0, 14);
             Console.Write("Цвет: ");
-
             ConsoleColor color = (ConsoleColor)(MenuColor.Show() + 9);
+            ClearString(0, 10, 30, 12);
+
+            switch (type)
+            {
+                case 1:
+                    {
+                        Figure one = new Square(x, y, color, a);
+                      //  Figures.Add(one);
+                        ((Square)one).Print();
+                      
+                        break;
+                    }
+                case 2:
+                    {
+
+                        Figure one = new Rectangle(x, y, color, a, b);
+                        ((Rectangle)one).Print();
+                        //Figures.Add(one);
+                        break;
+                    }
+                case 3:
+                    {
+
+                        Figure one = new Triangle(x, y, color, a);
+                        ((Triangle)one).Print();
+                        //Figures.Add(one);
+                        break;
+                    }
+
+                case 4:
+                    {
+                        //ромб
+
+                        break;
+
+                    }
+
+                case 5:
+                    {
+                        //трапеція
+
+                        break;
+
+                    }
+                case 6:
+                    {
+                        //багатокутник
+
+                        break;
+
+                    }
 
 
-            ClearString(0, 10, 30, 10);
 
-            Square one = new Square(x, y, color, size);
-
-            one.Print();
-            Console.ReadKey();
+                default:
+                    break;
+            }
+            
+          //  Console.ReadKey();
 
         }
 
@@ -155,6 +297,8 @@ namespace SimplyFigureView
             } while (ExitFlag);
 
         }
+
+
 
 
 

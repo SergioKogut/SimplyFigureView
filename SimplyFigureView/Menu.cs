@@ -31,9 +31,13 @@ namespace MenuSpace
             PosYmenu = y;
     }
 
+        public void SetY(int y)
+        {
+            PosYmenu = y;
 
+        }
 
-        private void SetColorText(int x, int y, string text, ConsoleColor color)
+       private void SetColorText(int x, int y, string text, ConsoleColor color)
         {
             Console.SetCursorPosition(x, y);
             Console.ForegroundColor = color;
@@ -135,9 +139,7 @@ namespace MenuSpace
 
         }
     }
-
-
-
+    
 
     /*
       Клас  вертикального меню  з делегатами 
